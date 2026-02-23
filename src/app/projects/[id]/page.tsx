@@ -132,7 +132,7 @@ export default function ProjectDetails() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="flex flex-col md:flex-row gap-8 md:gap-12 items-start mb-16 md:mb-20"
+                        className="flex flex-col md:flex-row gap-8 md:gap-12 items-start mb-16 md:mb-20 pl-6 md:pl-8"
                     >
                         {/* Thumbnail */}
                         <div className="w-full md:w-5/12 flex-shrink-0">
@@ -200,7 +200,7 @@ export default function ProjectDetails() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8 }}
-                        className="max-w-3xl"
+                        className="max-w-3xl pl-6 md:pl-8"
                     >
                         <span className="block text-xs uppercase tracking-[0.2em] text-[#555] mb-6">
                             About This Project

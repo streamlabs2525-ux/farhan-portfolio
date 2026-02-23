@@ -47,11 +47,11 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col items-center">
       {/* Slider Container */}
       <div
         ref={constraintsRef}
-        className="relative w-full aspect-[16/9] rounded-xl overflow-hidden bg-[#111] group"
+        className="relative w-full max-w-3xl aspect-[16/9] rounded-xl overflow-hidden bg-[#111] group"
       >
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
@@ -126,7 +126,7 @@ export default function ImageSlider({ images, title }: ImageSliderProps) {
       </div>
 
       {/* Image Count Text */}
-      <div className="flex justify-end mt-3">
+      <div className="flex justify-center w-full max-w-3xl mt-3">
         <span className="text-xs uppercase tracking-widest text-[#555]">
           {currentIndex + 1} / {images.length}
         </span>
