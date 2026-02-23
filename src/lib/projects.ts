@@ -117,3 +117,39 @@ export const deleteProject = async (id: string): Promise<boolean> => {
         return false;
     }
 };
+
+export const updateProjectImages = async (id: string, newImageUrls: string[]): Promise<boolean> => {
+    try {
+        const { error } = await supabase
+            .from("projects")
+            .update({ image_urls: newImageUrls })
+            .eq("id", id);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error("Error updating project images:", error);
+        return false;
+    }
+};
+
+export const updateProject = async (id: string, updates: Partial<Project>): Promise<boolean> => {
+    try {
+        const updateData: any = {};
+        if (updates.title !== undefined) updateData.title = updates.title;
+        if (updates.description !== undefined) updateData.description = updates.description;
+        if (updates.thumbnailUrl !== undefined) updateData.thumbnail_url = updates.thumbnailUrl;
+        if (updates.imageUrls !== undefined) updateData.image_urls = updates.imageUrls;
+
+        const { error } = await supabase
+            .from("projects")
+            .update(updateData)
+            .eq("id", id);
+
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error("Error updating project:", error);
+        return false;
+    }
+};

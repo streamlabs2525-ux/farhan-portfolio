@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addProject, uploadImage, getProjects, deleteProject, type Project } from "@/lib/projects";
-import { Plus, Image as ImageIcon, Loader2, Trash2 } from "lucide-react";
+import { addProject, uploadImage, getProjects, deleteProject, updateProjectImages, updateProject, type Project } from "@/lib/projects";
+import { Plus, Image as ImageIcon, Loader2, Trash2, Edit2, ArrowLeft, ArrowRight, X } from "lucide-react";
 
 export default function AdminPage() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,6 +18,15 @@ export default function AdminPage() {
     const [successMsg, setSuccessMsg] = useState("");
     const [projects, setProjects] = useState<Project[]>([]);
     const [loadingProjects, setLoadingProjects] = useState(false);
+    const [uploadingProjectId, setUploadingProjectId] = useState<string | null>(null);
+
+    // Edit State
+    const [editingProject, setEditingProject] = useState<Project | null>(null);
+    const [editTitle, setEditTitle] = useState("");
+    const [editDescription, setEditDescription] = useState("");
+    const [editThumbnailFile, setEditThumbnailFile] = useState<File | null>(null);
+    const [editImageUrls, setEditImageUrls] = useState<string[]>([]);
+    const [savingEdit, setSavingEdit] = useState(false);
 
     useEffect(() => {
         if (isLoggedIn) {
@@ -41,6 +50,37 @@ export default function AdminPage() {
             } else {
                 alert("Failed to delete project");
             }
+        }
+    };
+
+    const handleAddMoreImages = async (project: Project, files: FileList | null) => {
+        if (!files || files.length === 0 || !project.id) return;
+
+        setUploadingProjectId(project.id);
+        setSuccessMsg("");
+
+        try {
+            const timeStr = new Date().getTime();
+            const newUrls = [...(project.imageUrls || [])];
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const url = await uploadImage(file, `projects/${timeStr}_append${i}_${file.name}`);
+                if (url) newUrls.push(url);
+            }
+
+            const success = await updateProjectImages(project.id, newUrls);
+            if (success) {
+                setSuccessMsg(`Added ${files.length} images to ${project.title}`);
+                fetchProjects();
+            } else {
+                alert("Failed to save new project images.");
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Error adding images.");
+        } finally {
+            setUploadingProjectId(null);
         }
     };
 
@@ -97,6 +137,59 @@ export default function AdminPage() {
         } finally {
             setUploading(false);
         }
+    };
+
+    const openEdit = (project: Project) => {
+        setEditingProject(project);
+        setEditTitle(project.title);
+        setEditDescription(project.description);
+        setEditThumbnailFile(null);
+        setEditImageUrls(project.imageUrls || []);
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editingProject) return;
+        setSavingEdit(true);
+        try {
+            let newThumbUrl = editingProject.thumbnailUrl;
+            if (editThumbnailFile) {
+                const timeStr = new Date().getTime();
+                const url = await uploadImage(editThumbnailFile, `projects/${timeStr}_thumb_${editThumbnailFile.name}`);
+                if (url) newThumbUrl = url;
+            }
+
+            await updateProject(editingProject.id as string, {
+                title: editTitle,
+                description: editDescription,
+                thumbnailUrl: newThumbUrl,
+                imageUrls: editImageUrls,
+            });
+
+            setSuccessMsg(`Updated project: ${editTitle}`);
+            setEditingProject(null);
+            fetchProjects();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to update project");
+        } finally {
+            setSavingEdit(false);
+        }
+    };
+
+    const moveImage = (index: number, direction: 'left' | 'right') => {
+        const newIdx = direction === 'left' ? index - 1 : index + 1;
+        if (newIdx < 0 || newIdx >= editImageUrls.length) return;
+
+        const newUrls = [...editImageUrls];
+        const temp = newUrls[index];
+        newUrls[index] = newUrls[newIdx];
+        newUrls[newIdx] = temp;
+        setEditImageUrls(newUrls);
+    };
+
+    const removeImage = (index: number) => {
+        const newUrls = editImageUrls.filter((_, i) => i !== index);
+        setEditImageUrls(newUrls);
     };
 
     if (!isLoggedIn) {
@@ -266,13 +359,39 @@ export default function AdminPage() {
                                         />
                                     </div>
                                     <div className="p-4">
-                                        <h3 className="font-serif text-lg text-white mb-2 truncate">{project.title}</h3>
-                                        <button
-                                            onClick={() => handleDeleteProject(project.id)}
-                                            className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors"
-                                        >
-                                            <Trash2 size={16} /> Delete
-                                        </button>
+                                        <h3 className="font-serif text-lg text-white mb-4 truncate">{project.title}</h3>
+                                        <div className="flex items-center justify-between">
+                                            <label className={`flex items-center gap-2 text-xs transition-colors cursor-pointer ${uploadingProjectId === project.id ? 'text-[#d2b48c] opacity-50 cursor-not-allowed' : 'text-[#888] hover:text-[#d2b48c]'}`}>
+                                                {uploadingProjectId === project.id ? (
+                                                    <><Loader2 size={14} className="animate-spin" /> Uploading...</>
+                                                ) : (
+                                                    <><Plus size={14} /> Add Images</>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    disabled={uploadingProjectId === project.id}
+                                                    onChange={(e) => handleAddMoreImages(project, e.target.files)}
+                                                    className="hidden"
+                                                />
+                                            </label>
+
+                                            <button
+                                                onClick={() => openEdit(project)}
+                                                className="flex items-center gap-2 text-xs text-[#888] hover:text-white transition-colors"
+                                            >
+                                                <Edit2 size={14} /> Edit
+                                            </button>
+
+                                            <button
+                                                onClick={() => handleDeleteProject(project.id)}
+                                                disabled={uploadingProjectId === project.id}
+                                                className="flex items-center gap-2 text-xs text-red-500 hover:text-red-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                <Trash2 size={14} /> Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -280,6 +399,119 @@ export default function AdminPage() {
                     )}
                 </div>
             </div>
+
+            {/* Edit Project Modal */}
+            {editingProject && (
+                <div className="fixed inset-0 bg-black/90 flex items-center justify-center p-6 z-50 overflow-y-auto">
+                    <div className="bg-[#111] p-8 rounded-xl border border-[#333] max-w-3xl w-full my-8 relative">
+                        <button
+                            onClick={() => setEditingProject(null)}
+                            className="absolute top-4 right-4 text-[#888] hover:text-white transition-colors"
+                        >
+                            <X size={24} />
+                        </button>
+
+                        <h2 className="text-2xl font-serif mb-6 border-b border-[#333] pb-4">Edit Project</h2>
+
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-sm text-[#888] mb-2 uppercase tracking-widest">Title</label>
+                                    <input
+                                        type="text"
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                        className="w-full bg-[#1a1a1a] text-white p-3 rounded-lg outline-none border border-[#333] focus:border-[#d2b48c]"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm text-[#888] mb-2 uppercase tracking-widest">Update Thumbnail</label>
+                                    <div className="w-full bg-[#1a1a1a] p-2 rounded-lg border border-[#333] flex items-center justify-between">
+                                        <span className="text-sm truncate px-2 text-[#aaa]">
+                                            {editThumbnailFile ? editThumbnailFile.name : "Keep existing thumbnail..."}
+                                        </span>
+                                        <label className="bg-[#333] cursor-pointer hover:bg-[#444] px-4 py-1.5 rounded-md text-sm transition-colors">
+                                            Browse
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => setEditThumbnailFile(e.target.files?.[0] || null)}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm text-[#888] mb-2 uppercase tracking-widest">Description</label>
+                                <textarea
+                                    value={editDescription}
+                                    onChange={(e) => setEditDescription(e.target.value)}
+                                    className="w-full bg-[#1a1a1a] text-white p-3 rounded-lg outline-none border border-[#333] focus:border-[#d2b48c] min-h-[120px]"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm text-[#888] mb-2 uppercase tracking-widest">Gallery Images (Sort & Remove)</label>
+                                {editImageUrls.length === 0 ? (
+                                    <p className="text-[#888] text-sm italic">No gallery images available.</p>
+                                ) : (
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                        {editImageUrls.map((url, idx) => (
+                                            <div key={idx} className="bg-[#1a1a1a] border border-[#333] rounded-lg overflow-hidden relative group">
+                                                <div className="aspect-video relative bg-[#000]">
+                                                    <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="p-2 flex justify-between items-center bg-[#111]">
+                                                    <div className="flex gap-1">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveImage(idx, 'left')}
+                                                            disabled={idx === 0}
+                                                            className="p-1 rounded bg-[#222] text-[#ccc] hover:bg-[#333] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            <ArrowLeft size={14} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => moveImage(idx, 'right')}
+                                                            disabled={idx === editImageUrls.length - 1}
+                                                            className="p-1 rounded bg-[#222] text-[#ccc] hover:bg-[#333] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+                                                        >
+                                                            <ArrowRight size={14} />
+                                                        </button>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage(idx)}
+                                                        className="text-red-500 hover:text-red-400 p-1"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={handleSaveEdit}
+                                disabled={savingEdit}
+                                className="w-full bg-[#d2b48c] text-black font-medium py-3 rounded-lg hover:bg-white transition-colors flex justify-center items-center gap-2 mt-4"
+                            >
+                                {savingEdit ? (
+                                    <><Loader2 className="animate-spin" size={20} /> Saving Changes...</>
+                                ) : (
+                                    "Save Changes"
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
