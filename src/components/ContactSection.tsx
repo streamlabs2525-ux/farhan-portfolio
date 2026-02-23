@@ -53,7 +53,7 @@ export default function ContactSection() {
                         { name: "Instagram", icon: <Instagram size={20} />, url: "https://www.instagram.com/farhantanvir._/" },
                         { name: "Facebook", icon: <Facebook size={20} />, url: "https://www.facebook.com/farhantanvir123" },
                         { name: "X", icon: <Twitter size={20} />, url: "https://x.com/Farhan_tanvir10" },
-                        { name: "LinkedIn", icon: <Linkedin size={20} />, url: "#" } // Add LinkedIn link here if you have one!
+                        { name: "LinkedIn", icon: <Linkedin size={20} />, url: "https://www.linkedin.com/in/farhan-tanvir-0718bb2a7" } // Add LinkedIn link here if you have one!
                     ].map((social) => (
                         <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="hover:text-[#d2b48c] transition-colors duration-300">
                             {social.icon}

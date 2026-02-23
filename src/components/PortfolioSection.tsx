@@ -50,7 +50,7 @@ export default function PortfolioSection({ className }: { className?: string }) 
     }, []);
 
     return (
-        <section id="portfolio" className={`py-24 w-full bg-[#050505] min-h-screen ${className || ""}`}>
+        <section id="portfolio" className={`py-24 w-full bg-transparent min-h-screen ${className || ""}`}>
             <div className="w-full max-w-7xl mx-auto px-6 lg:px-12">
                 <div className="flex flex-col md:flex-row items-end mb-16 gap-6">
                     <div className="w-[40px]"></div>

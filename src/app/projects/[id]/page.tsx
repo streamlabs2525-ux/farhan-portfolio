@@ -116,7 +116,7 @@ export default function ProjectDetails() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] text-[#ededed] p-6 py-8 md:p-12 font-sans font-light">
+        <div className="min-h-screen bg-transparent text-[#ededed] p-6 py-8 md:p-12 font-sans font-light">
             {/* Top Back Arrow (Golden) */}
             <Link href="/#portfolio" className="inline-block text-[#d2b48c] mb-16 hover:opacity-80 transition-opacity">
                 <ArrowLeft size={28} strokeWidth={1.5} />

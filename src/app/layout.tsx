@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import CursorGlow from "@/components/CursorGlow";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,9 +26,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-[#0a0a0a] text-white selection:bg-[#d2b48c]/30 selection:text-[#d2b48c] min-h-screen flex flex-col`}
+        className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-[#0a0a0a] text-white selection:bg-[#d2b48c]/30 selection:text-[#d2b48c] min-h-screen flex flex-col relative`}
       >
-        {children}
+        <CursorGlow />
+        <div className="relative z-10 flex flex-col flex-1">
+          {children}
+        </div>
       </body>
     </html>
   );
