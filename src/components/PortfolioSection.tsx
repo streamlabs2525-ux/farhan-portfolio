@@ -100,11 +100,12 @@ export default function PortfolioSection({ className }: { className?: string }) 
                                             whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{ once: true }}
                                             transition={{ duration: 0.6, delay: idx * 0.1 }}
-                                            whileHover={{ y: -10 }}
-                                            className="group relative justify-center flex flex-col overflow-hidden rounded-xl bg-[#0a0a0a]"
+                                            whileHover={{ y: -5 }}
+                                            className="group relative flex flex-col"
                                         >
                                             <Link href={`/projects/${project.id}`} className="absolute inset-0 z-20" />
-                                            <div className="relative w-full aspect-[16/9] overflow-hidden bg-[#1a1a1a]">
+
+                                            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl bg-[#1a1a1a] mb-5">
                                                 <Image
                                                     src={project.thumbnailUrl}
                                                     alt={project.title}
@@ -112,16 +113,16 @@ export default function PortfolioSection({ className }: { className?: string }) 
                                                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                                                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                                                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                             </div>
 
-                                            <div className="absolute bottom-0 left-0 w-full p-6 z-10 flex justify-between items-end translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                            <div className="flex justify-between items-start px-2">
                                                 <div>
-                                                    <h3 className=" justify-center text-center text-2xl font-serif text-white mb-1 group-hover:text-[#d2b48c] transition-colors">{project.title}</h3>
-                                                    <p className="text-sm text-neutral-100 capitalize">.  Click To View</p>
+                                                    <h3 className="text-xl md:text-2xl font-serif text-white mb-2 group-hover:text-[#d2b48c] transition-colors">{project.title}</h3>
+                                                    <p className="text-xs tracking-widest text-[#888] uppercase"></p>
                                                 </div>
-                                                <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                                                    <ArrowUpRight size={20} className="text-white" />
+                                                <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[#d2b48c] transition-all duration-300 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0">
+                                                    <ArrowUpRight size={18} className="text-white/50 group-hover:text-[#d2b48c] transition-colors" />
                                                 </div>
                                             </div>
                                         </motion.div>

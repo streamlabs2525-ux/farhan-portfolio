@@ -73,10 +73,22 @@ export default function HeroSection() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8, delay: 0.7 }}
-                            className="text-[#999] text-base md:text-xl max-w-xl font-light leading-relaxed"
+                            className="hidden md:block text-[#999] text-base md:text-xl max-w-xl font-light leading-relaxed"
                         >
                             I design brands, editorial layouts, and digital interfaces that communicate with clarity and elegance. Every pixel serves a purpose.
                         </motion.p>
+
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1, delay: 1 }}
+                            className="flex md:hidden flex-col items-center gap-4 mt-8"
+                        >
+                            <span className="text-xs uppercase tracking-widest text-neutral-500">Selected Work</span>
+                            <Link href="#portfolio" className="text-neutral-500 hover:text-white transition-colors duration-300">
+                                <ArrowDown className="animate-bounce" size={20} />
+                            </Link>
+                        </motion.div>
                     </motion.div>
                 </div>
             </div>
@@ -85,7 +97,7 @@ export default function HeroSection() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1, delay: 1 }}
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-10"
+                className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 flex-col items-center gap-4 z-10"
             >
                 <span className="text-xs uppercase tracking-widest text-neutral-500">Selected Work</span>
                 <Link href="#portfolio" className="text-neutral-500 hover:text-white transition-colors duration-300">

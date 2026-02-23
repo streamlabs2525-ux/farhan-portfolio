@@ -161,11 +161,12 @@ export default function ProjectDetails() {
                                 transition={{ duration: 0.6, delay: 0.2 }}
                                 className="w-full lg:w-[55%] xl:w-[60%] flex flex-col justify-start pt-2 lg:pt-6"
                             >
-                                <h1 className="text-4xl md:text-5xl lg:text-7xl mb-4 text-white tracking-tight">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl mb-8 text-white tracking-tight leading-tight">
                                     {project.title}
                                 </h1>
-                                <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-[#666]">
-                                    <span className="text-[#888]">UPLOADED</span> {uploadDate}
+                                <div className="h-[15px]"></div>
+                                <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-[#666] mt-4">
+                                    {uploadDate}
                                 </p>
                             </motion.div>
                         </div>
