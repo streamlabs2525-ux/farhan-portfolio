@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/yeasin_arafat",
+        destination: "/Privacy-Policy.html",
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
